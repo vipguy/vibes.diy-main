@@ -63,7 +63,7 @@
     "@vibes.diy/utils": "workspace:*",
     "chanfana": "^2.8.2",
     "dotenv": "^16.6.1",
-    "hono": "^4.9.2",
+    "hono": "^4.10.2",
     "jose": "^6.0.12",
     "multiformats": "^13.4.0",
     "unique-names-generator": "^4.7.1",
