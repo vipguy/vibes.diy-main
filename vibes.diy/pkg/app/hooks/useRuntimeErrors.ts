@@ -18,44 +18,52 @@ export function useRuntimeErrors({
   const categorizeError = useCallback((error: RuntimeError): ErrorCategory => {
     // Extract error type from message if not already classified
     if (!error.errorType) {
+      const msg = error.message || '';
+      const stack = error.stack || '';
+      const reason = error.reason || '';
+      
       // Handle Babel syntax errors which often come as 'Script error.' with limited info
-      // Check for Babel errors in source or stack which may contain more useful information
       if (
-        (error.message === "Script error." ||
-          error.message?.includes("Script error")) &&
-        (error.stack?.includes("Babel") || error.stack?.includes("parse-error"))
+        (msg === "Script error." || msg.includes("Script error")) &&
+        (stack.includes("Babel") || stack.includes("parse-error"))
       ) {
         error.errorType = "SyntaxError";
         // Enhance the message with more details from the stack if possible
-        if (error.stack && error.message === "Script error.") {
+        if (stack && msg === "Script error.") {
           // Extract more meaningful information from the stack trace
-          const babelErrorMatch = error.stack.match(
-            /Babel\s+script:\s+([^\n]+)/i,
-          );
-          const parseErrorMatch = error.stack.match(
-            /parse-error\.ts:[\d]+:[\d]+\)([^\n]+)/i,
-          );
+          const babelErrorMatch = stack.match(/Babel\s+script:\s+([^\n]+)/i);
+          const parseErrorMatch = stack.match(/parse-error\.ts:[\d]+:[\d]+\)([^\n]+)/i);
+          const unexpectedMatch = stack.match(/Unexpected token[^\n]*/i);
+          
           if (babelErrorMatch?.[1]) {
             error.message = `Babel Syntax Error: ${babelErrorMatch[1].trim()}`;
           } else if (parseErrorMatch?.[1]) {
             error.message = `Syntax Error: ${parseErrorMatch[1].trim()}`;
+          } else if (unexpectedMatch?.[0]) {
+            error.message = `Syntax Error: ${unexpectedMatch[0]}`;
           } else {
             error.message = "Babel Syntax Error: Invalid JavaScript syntax";
           }
         }
-      } else if (error.message?.includes("SyntaxError")) {
+      } else if (msg.includes("SyntaxError") || msg.includes("Unexpected token")) {
         error.errorType = "SyntaxError";
-      } else if (error.message?.includes("ReferenceError")) {
+      } else if (msg.includes("ReferenceError") || msg.includes("is not defined")) {
         error.errorType = "ReferenceError";
-      } else if (error.message?.includes("TypeError")) {
+      } else if (msg.includes("TypeError") || msg.includes("is not a function") || msg.includes("Cannot read")) {
         error.errorType = "TypeError";
+      } else if (msg.includes("NetworkError") || msg.includes("Failed to fetch")) {
+        error.errorType = "NetworkError";
       } else if (
-        error.message?.includes("Not found:") ||
-        error.reason?.includes("Not found:") ||
-        error.message?.includes("database") ||
-        error.message?.includes("CRDT")
+        msg.includes("Not found:") ||
+        reason.includes("Not found:") ||
+        msg.includes("database") ||
+        msg.includes("CRDT")
       ) {
         error.errorType = "DatabaseError";
+      } else if (msg.includes("Hydration") || msg.includes("hydration")) {
+        error.errorType = "HydrationError";
+      } else if (msg.includes("Maximum update depth") || msg.includes("Too many re-renders")) {
+        error.errorType = "InfiniteLoopError";
       } else {
         error.errorType = "Other";
       }

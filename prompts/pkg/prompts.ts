@@ -300,12 +300,12 @@ export async function makeBaseSystemPrompt(
   sessionDoc: Partial<UserSettings> & LlmSelectionOptions,
 ): Promise<SystemPromptResult> {
   const userPrompt = sessionDoc?.userPrompt || "";
-  
+
   // Apply Universal Excellence Framework enrichment
   const enrichmentResult = enrichPrompt(userPrompt);
   const enrichedUserPrompt = enrichmentResult.enrichedPrompt;
   const detectedCategory = enrichmentResult.category;
-  
+
   const history: HistoryMessage[] = Array.isArray(sessionDoc?.history)
     ? sessionDoc.history
     : [];
@@ -485,16 +485,42 @@ Every app you create MUST have:
 - Consider and extend code from previous responses when relevant
 - Keep files concise for fast updates
 
-## Error Handling & Debugging
-- When you receive error messages, IMMEDIATELY analyze and fix them
-- Provide the COMPLETE corrected code, not just the fix
-- Handle crash reports by simplifying affected code
-- If you get missing block errors, change the database name
-- For syntax errors: check brackets, parentheses, and JSX syntax
-- For reference errors: ensure all variables and imports are defined
-- For type errors: verify function calls and property access
-- ALWAYS test your mental model of the code before responding
-- If errors persist after one fix attempt, simplify the implementation
+## Error Handling & Debugging (CRITICAL)
+
+When you receive error messages, follow this protocol:
+
+1. **ANALYZE THE ERROR**
+   - Read the error type and message carefully
+   - Identify the root cause, not just the symptom
+   - Check for common patterns (missing imports, typos, wrong syntax)
+
+2. **FIX STRATEGIES BY ERROR TYPE**
+   - **SyntaxError**: Check brackets, parentheses, JSX closing tags, quotes
+   - **ReferenceError**: Ensure all variables are defined, check imports, verify function names
+   - **TypeError**: Verify function calls, check property access, ensure correct data types
+   - **NetworkError**: Add error handling, check API endpoints, add retry logic
+   - **DatabaseError**: Change database name, verify Fireproof usage, check document structure
+   - **HydrationError**: Ensure server/client rendering consistency, check useEffect dependencies
+   - **InfiniteLoopError**: Review useEffect dependencies, check state updates in render
+
+3. **PROVIDE COMPLETE SOLUTION**
+   - Give the ENTIRE corrected code, not just the changed lines
+   - Explain what was wrong and how you fixed it
+   - Test your mental model before responding
+   - If unsure, simplify the implementation
+
+4. **PREVENTION**
+   - Add try-catch blocks around risky operations
+   - Validate data before using it
+   - Add loading and error states
+   - Use optional chaining (?.) for potentially undefined values
+   - Add fallback values with nullish coalescing (??)
+
+5. **IF ERRORS PERSIST**
+   - Simplify the feature causing issues
+   - Remove non-essential complexity
+   - Use more basic patterns that are guaranteed to work
+   - Focus on getting it working first, then enhance
 - Provide clear error messages to users
 - Use try-catch blocks for async operations
 - Log errors to console for debugging
@@ -515,15 +541,14 @@ ${concatenatedLlmsTxt}
 
 You should use this component in all cases where you need to generate or edit images. It is a React component that provides a UI for image generation and editing. Make sure to pass the database prop to the component. If you generate images, use a live query to list them (with type 'image') in the UI. The best usage is to save a document with a string field called \`prompt\` (which is sent to the generator) and an optional \`doc._files.original\` image and pass the \`doc._id\` to the component via the  \`_id\` prop. It will handle the rest.
 
-${
-  enrichedUserPrompt
-    ? `## USER REQUEST
+${enrichedUserPrompt
+      ? `## USER REQUEST
 
 ${enrichedUserPrompt}
 
 `
-    : ""
-}IMPORTANT: You are working in one JavaScript file, use tailwind classes for styling. Remember to use brackets like bg-[#242424] for custom colors.
+      : ""
+    }IMPORTANT: You are working in one JavaScript file, use tailwind classes for styling. Remember to use brackets like bg-[#242424] for custom colors.
 
 Provide a title and brief explanation followed by the component code. The component should demonstrate proper Fireproof integration with real-time updates and proper data persistence. Follow it with a short description of the app's purpose and instructions how to use it (with occasional bold or italic for emphasis). Then suggest some additional features that could be added to the app.
 

@@ -39,7 +39,7 @@ export interface RuntimeError {
   stack?: string;
   reason?: string;
   timestamp: string;
-  errorType?: 'SyntaxError' | 'ReferenceError' | 'TypeError' | 'DatabaseError' | 'Other';
+  errorType?: 'SyntaxError' | 'ReferenceError' | 'TypeError' | 'DatabaseError' | 'NetworkError' | 'HydrationError' | 'InfiniteLoopError' | 'Other' | 'Unknown';
 }
 
 export * from './vibes-gen-types.js';
