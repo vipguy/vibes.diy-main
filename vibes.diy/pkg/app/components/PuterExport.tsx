@@ -14,10 +14,12 @@ import {
 
 interface PuterExportProps {
   html: string;
+  sessionId?: string;
+  title?: string;
   onClose: () => void;
 }
 
-export function PuterExport({ html, onClose }: PuterExportProps) {
+export function PuterExport({ html, sessionId, title, onClose }: PuterExportProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [user, setUser] = useState<PuterUser | null>(null);
@@ -26,6 +28,7 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
   const [deployedSite, setDeployedSite] = useState<PuterSite | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [existingSites, setExistingSites] = useState<PuterSite[]>([]);
+  const [existingMetadata, setExistingMetadata] = useState<any>(null);
 
   useEffect(() => {
     initializePuter();
@@ -102,7 +105,10 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
 
     try {
       const files = generateDeploymentFiles(html);
-      const site = await deployToPuter(subdomain, files);
+      const site = await deployToPuter(subdomain, files, {
+        sessionId,
+        title,
+      });
       setDeployedSite(site);
       
       // Refresh sites list
@@ -114,6 +120,16 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
     } finally {
       setIsDeploying(false);
     }
+  }
+
+  async function handleSubdomainSelect(selectedSubdomain: string) {
+    setSubdomain(selectedSubdomain);
+    
+    // Load metadata for this subdomain
+    const metadata = await import('../utils/puterIntegration.js').then(m => 
+      m.getProjectMetadata(selectedSubdomain)
+    );
+    setExistingMetadata(metadata);
   }
 
   if (isLoading) {
@@ -227,7 +243,7 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
                           <div
                             key={site.uid}
                             className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 cursor-pointer"
-                            onClick={() => setSubdomain(site.subdomain)}
+                            onClick={() => handleSubdomainSelect(site.subdomain)}
                           >
                             {site.subdomain}.puter.site
                           </div>
@@ -239,12 +255,31 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
                     </div>
                   )}
 
+                  {existingMetadata && (
+                    <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+                        ⚠️ Updating Existing Site
+                      </p>
+                      <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                        Last deployed: {new Date(existingMetadata.deployedAt).toLocaleString()}
+                      </p>
+                      {existingMetadata.title && (
+                        <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                          Title: {existingMetadata.title}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   <button
                     onClick={handleDeploy}
                     disabled={isDeploying || !subdomain.trim()}
                     className="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
                   >
-                    {isDeploying ? 'Deploying...' : 'Deploy to Puter'}
+                    {isDeploying 
+                      ? (existingMetadata ? 'Updating...' : 'Deploying...') 
+                      : (existingMetadata ? 'Update Site' : 'Deploy to Puter')
+                    }
                   </button>
                 </div>
               ) : (
@@ -256,7 +291,7 @@ export function PuterExport({ html, onClose }: PuterExportProps) {
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Deployment Successful!
+                    {existingMetadata ? 'Update Successful!' : 'Deployment Successful!'}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">
                     Your app is now live at:

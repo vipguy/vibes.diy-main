@@ -96,23 +96,132 @@ export async function signOutFromPuter(): Promise<void> {
   await window.puter.auth.signOut();
 }
 
+export interface ProjectMetadata {
+  subdomain: string;
+  sessionId?: string;
+  title?: string;
+  html: string;
+  deployedAt: string;
+  updatedAt: string;
+  dirName: string;
+}
+
+/**
+ * Save project metadata to Puter KV store
+ */
+export async function saveProjectMetadata(
+  subdomain: string,
+  metadata: Omit<ProjectMetadata, 'subdomain'>
+): Promise<void> {
+  if (!isPuterLoaded() || !isPuterSignedIn()) {
+    throw new Error('Must be signed in to Puter to save metadata');
+  }
+
+  const projectData: ProjectMetadata = {
+    subdomain,
+    ...metadata,
+  };
+
+  const key = `vibes-project-${subdomain}`;
+  await window.puter.kv.set(key, JSON.stringify(projectData));
+}
+
+/**
+ * Get project metadata from Puter KV store
+ */
+export async function getProjectMetadata(subdomain: string): Promise<ProjectMetadata | null> {
+  if (!isPuterLoaded() || !isPuterSignedIn()) {
+    return null;
+  }
+
+  try {
+    const key = `vibes-project-${subdomain}`;
+    const data = await window.puter.kv.get(key);
+    
+    if (!data) return null;
+    
+    return JSON.parse(data) as ProjectMetadata;
+  } catch (error) {
+    console.error('Failed to get project metadata:', error);
+    return null;
+  }
+}
+
+/**
+ * List all saved projects
+ */
+export async function listSavedProjects(): Promise<ProjectMetadata[]> {
+  if (!isPuterLoaded() || !isPuterSignedIn()) {
+    return [];
+  }
+
+  try {
+    const keys = await window.puter.kv.list();
+    const projectKeys = keys.filter((key: string) => key.startsWith('vibes-project-'));
+    
+    const projects: ProjectMetadata[] = [];
+    for (const key of projectKeys) {
+      const data = await window.puter.kv.get(key);
+      if (data) {
+        projects.push(JSON.parse(data));
+      }
+    }
+    
+    return projects.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+  } catch (error) {
+    console.error('Failed to list saved projects:', error);
+    return [];
+  }
+}
+
+/**
+ * Delete project metadata
+ */
+export async function deleteProjectMetadata(subdomain: string): Promise<void> {
+  if (!isPuterLoaded() || !isPuterSignedIn()) {
+    throw new Error('Must be signed in to Puter to delete metadata');
+  }
+
+  const key = `vibes-project-${subdomain}`;
+  await window.puter.kv.del(key);
+}
+
 /**
  * Deploy app to Puter hosting
  */
 export async function deployToPuter(
   subdomain: string,
-  files: { path: string; content: string }[]
+  files: { path: string; content: string }[],
+  metadata?: {
+    sessionId?: string;
+    title?: string;
+  }
 ): Promise<PuterSite> {
   if (!isPuterLoaded() || !isPuterSignedIn()) {
     throw new Error('Must be signed in to Puter to deploy');
   }
 
   try {
-    // Create a directory for the site
-    const dirName = `vibes-${subdomain}-${Date.now()}`;
-    await window.puter.fs.mkdir(dirName);
+    const now = new Date().toISOString();
+    let dirName: string;
+    let isUpdate = false;
 
-    // Write all files to the directory
+    // Check if this is an update to an existing project
+    const existingMetadata = await getProjectMetadata(subdomain);
+    
+    if (existingMetadata) {
+      // Update existing project - reuse the same directory
+      dirName = existingMetadata.dirName;
+      isUpdate = true;
+    } else {
+      // New project - create new directory
+      dirName = `vibes-${subdomain}-${Date.now()}`;
+      await window.puter.fs.mkdir(dirName);
+    }
+
+    // Write all files to the directory (overwrites existing files)
     for (const file of files) {
       const filePath = `${dirName}/${file.path}`;
       await window.puter.fs.write(filePath, file.content);
@@ -130,6 +239,16 @@ export async function deployToPuter(
       // Create new site if it doesn't exist
       site = await window.puter.hosting.create(subdomain, dirName);
     }
+
+    // Save project metadata
+    await saveProjectMetadata(subdomain, {
+      sessionId: metadata?.sessionId,
+      title: metadata?.title,
+      html: files.find(f => f.path === 'index.html')?.content || '',
+      deployedAt: existingMetadata?.deployedAt || now,
+      updatedAt: now,
+      dirName,
+    });
 
     return site;
   } catch (error) {

@@ -12,6 +12,8 @@ interface ShareModalProps {
   isPublishing: boolean;
   isFirehoseShared?: boolean;
   code?: string; // Add code prop for Puter export
+  sessionId?: string; // Add sessionId for Puter metadata
+  title?: string; // Add title for Puter metadata
 }
 
 export function ShareModal({
@@ -23,6 +25,8 @@ export function ShareModal({
   isPublishing,
   isFirehoseShared = false,
   code = "",
+  sessionId,
+  title,
 }: ShareModalProps) {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
   const [shareToFirehose, setShareToFirehose] = useState(isFirehoseShared);
@@ -238,7 +242,7 @@ export function ShareModal({
                 </span>
                 {/* animated background indicates progress */}
               </button>
-              
+
               {/* Puter Export Button */}
               <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <p className="mb-2 text-xs text-gray-600 dark:text-gray-400">
@@ -260,11 +264,13 @@ export function ShareModal({
           )}
         </div>
       </div>
-      
+
       {/* Puter Export Modal */}
       {showPuterExport && (
         <PuterExport
           html={code}
+          sessionId={sessionId}
+          title={title}
           onClose={() => setShowPuterExport(false)}
         />
       )}
