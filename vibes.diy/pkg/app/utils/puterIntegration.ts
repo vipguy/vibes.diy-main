@@ -287,19 +287,24 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
 
 /**
  * Generate files for deployment from React component code
+ * Uses the same approach as vibesbox.dev hosting
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
-  // Create a standalone HTML file with all necessary dependencies
+  // Import the transformation function from prompts package
+  // This is the same transformation used by the regular publish flow
+  const { normalizeComponentExports } = require('@vibes.diy/prompts');
+  
+  // Transform the code to use ESM imports from esm.sh
+  const transformedCode = normalizeComponentExports(reactCode);
+  
+  // Create a standalone HTML file similar to vibesbox.dev
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibes DIY App</title>
-  <script crossorigin src="https://unpkg.com/react@19.2.0/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@19.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/use-fireproof@0.23/dist/use-fireproof.standalone.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * {
       margin: 0;
@@ -312,23 +317,20 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
         sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
     }
     #root {
       width: 100%;
-      height: 100vh;
+      height: 100%;
     }
   </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
-    const { useFireproof } = window.UseFireproof;
-    
-    ${reactCode}
-    
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+  <script type="module">
+    ${transformedCode}
   </script>
 </body>
 </html>`;
