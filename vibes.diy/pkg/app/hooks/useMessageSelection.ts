@@ -129,24 +129,21 @@ export function useMessageSelection({
       ? parseContent(selectedResponseDoc.text)
       : { segments: [] };
 
-    // First try to find code in the currently selected message
-    let code = segments.find((segment) => segment.type === "code");
+    // ALWAYS get the most recent code from all AI messages
+    // This ensures export/hosting always has the latest complete app
+    const aiMessages = docs
+      .filter((doc) => doc.type === "ai")
+      .sort((a, b) => b.created_at - a.created_at);
 
-    // If no code was found and we have a valid selectedResponseDoc, look through all AI messages
-    if (!code && selectedResponseDoc) {
-      // Get all AI messages sorted from newest to oldest
-      const aiMessages = docs
-        .filter((doc) => doc.type === "ai")
-        .sort((a, b) => b.created_at - a.created_at);
+    let code: Segment | undefined;
 
-      // Look through each AI message until we find code
-      for (const message of aiMessages) {
-        // Skip the current message as we already checked it
-        if (message._id === selectedResponseDoc._id) continue;
-
-        const { segments: msgSegments } = parseContent(message.text);
-        code = msgSegments.find((segment) => segment.type === "code");
-        if (code) break; // Stop once we find code
+    // Look through all AI messages from newest to oldest to find the most recent code
+    for (const message of aiMessages) {
+      const { segments: msgSegments } = parseContent(message.text);
+      const foundCode = msgSegments.find((segment) => segment.type === "code");
+      if (foundCode) {
+        code = foundCode;
+        break; // Use the most recent code found
       }
     }
 
