@@ -148,6 +148,7 @@ const ResultPreviewHeaderContent: React.FC<ResultPreviewHeaderContentProps> = ({
           onPublish={handlePublish}
           isPublishing={isPublishing}
           isFirehoseShared={session.firehoseShared}
+          code={code}
         />
       )}
     </div>

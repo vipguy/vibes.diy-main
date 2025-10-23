@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { trackPublishClick } from "../../utils/analytics.js";
+import { PuterExport } from "../PuterExport.js";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ShareModalProps {
   onPublish: (shareToFirehose?: boolean) => Promise<void>;
   isPublishing: boolean;
   isFirehoseShared?: boolean;
+  code?: string; // Add code prop for Puter export
 }
 
 export function ShareModal({
@@ -20,9 +22,11 @@ export function ShareModal({
   onPublish,
   isPublishing,
   isFirehoseShared = false,
+  code = "",
 }: ShareModalProps) {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
   const [shareToFirehose, setShareToFirehose] = useState(isFirehoseShared);
+  const [showPuterExport, setShowPuterExport] = useState(false);
 
   const publishedSubdomain = iframeUrl
     ? new URL(iframeUrl).hostname.split(".")[0]
@@ -234,10 +238,36 @@ export function ShareModal({
                 </span>
                 {/* animated background indicates progress */}
               </button>
+              
+              {/* Puter Export Button */}
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <p className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+                  Or export to Puter hosting:
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowPuterExport(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 hover:bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors"
+                  role="menuitem"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                  </svg>
+                  Export to Puter
+                </button>
+              </div>
             </div>
           )}
         </div>
       </div>
+      
+      {/* Puter Export Modal */}
+      {showPuterExport && (
+        <PuterExport
+          html={code}
+          onClose={() => setShowPuterExport(false)}
+        />
+      )}
     </div>,
     document.body,
   );
