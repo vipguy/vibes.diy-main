@@ -109,6 +109,13 @@ export function PuterExport({ html, sessionId, title, onClose }: PuterExportProp
         sessionId,
         title,
       });
+      
+      // Ensure URL is set, construct it if not provided
+      if (!site.url) {
+        site.url = `https://${subdomain}.puter.site`;
+      }
+      
+      console.log('Deployed site:', site);
       setDeployedSite(site);
       
       // Refresh sites list
@@ -296,13 +303,23 @@ export function PuterExport({ html, sessionId, title, onClose }: PuterExportProp
                   <p className="text-gray-600 dark:text-gray-300 mb-4">
                     Your app is now live at:
                   </p>
+                  <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <a
+                      href={deployedSite.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-lg font-mono text-blue-500 hover:text-blue-600 break-all"
+                    >
+                      {deployedSite.url}
+                    </a>
+                  </div>
                   <a
                     href={deployedSite.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors mb-4"
                   >
-                    {deployedSite.url}
+                    Open Site →
                   </a>
                   <div className="flex gap-4 justify-center">
                     <button
