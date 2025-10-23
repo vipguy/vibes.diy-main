@@ -11,6 +11,7 @@ import {
 import { getDefaultDependencies } from "./catalog.js";
 import { getTexts } from "./txt-docs.js";
 import { defaultStylePrompt } from "./style-prompts.js";
+import { enrichPrompt, detectAppCategory } from "./excellence-framework.js";
 
 // Single source of truth for the default coding model used across the repo.
 export const DEFAULT_CODING_MODEL = "anthropic/claude-sonnet-4.5" as const;
@@ -299,6 +300,12 @@ export async function makeBaseSystemPrompt(
   sessionDoc: Partial<UserSettings> & LlmSelectionOptions,
 ): Promise<SystemPromptResult> {
   const userPrompt = sessionDoc?.userPrompt || "";
+  
+  // Apply Universal Excellence Framework enrichment
+  const enrichmentResult = enrichPrompt(userPrompt);
+  const enrichedUserPrompt = enrichmentResult.enrichedPrompt;
+  const detectedCategory = enrichmentResult.category;
+  
   const history: HistoryMessage[] = Array.isArray(sessionDoc?.history)
     ? sessionDoc.history
     : [];
@@ -461,8 +468,10 @@ ${concatenatedLlmsTxt}
 You should use this component in all cases where you need to generate or edit images. It is a React component that provides a UI for image generation and editing. Make sure to pass the database prop to the component. If you generate images, use a live query to list them (with type 'image') in the UI. The best usage is to save a document with a string field called \`prompt\` (which is sent to the generator) and an optional \`doc._files.original\` image and pass the \`doc._id\` to the component via the  \`_id\` prop. It will handle the rest.
 
 ${
-  userPrompt
-    ? `${userPrompt}
+  enrichedUserPrompt
+    ? `## USER REQUEST
+
+${enrichedUserPrompt}
 
 `
     : ""

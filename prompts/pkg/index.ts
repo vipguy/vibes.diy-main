@@ -8,6 +8,7 @@ export * from "./catalog.js";
 
 export * from "./view-state.js";
 export * from "./style-prompts.js";
+export * from "./excellence-framework.js";
 export { parseContent } from "./segment-parser.js";
 
 // Explicitly export resolveEffectiveModel to ensure it's available
