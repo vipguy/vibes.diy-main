@@ -285,16 +285,15 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
   await window.puter.hosting.delete(subdomain);
 }
 
+import { normalizeComponentExports } from '@vibes.diy/prompts';
+
 /**
  * Generate files for deployment from React component code
  * Uses the same approach as vibesbox.dev hosting
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
-  // Import the transformation function from prompts package
-  // This is the same transformation used by the regular publish flow
-  const { normalizeComponentExports } = require('@vibes.diy/prompts');
-  
   // Transform the code to use ESM imports from esm.sh
+  // This is the same transformation used by the regular publish flow
   const transformedCode = normalizeComponentExports(reactCode);
   
   // Create a standalone HTML file similar to vibesbox.dev
