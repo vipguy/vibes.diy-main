@@ -340,10 +340,54 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
       font-family: monospace;
       white-space: pre-wrap;
     }
+    .primalcore-badge {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .primalcore-badge:hover {
+      background: rgba(0, 0, 0, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    .primalcore-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+    @media (max-width: 640px) {
+      .primalcore-badge {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
+  <a href="https://primalcore.com" target="_blank" rel="noopener noreferrer" class="primalcore-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+      <path d="M2 17l10 5 10-5"></path>
+      <path d="M2 12l10 5 10-5"></path>
+    </svg>
+    <span>Made by Primalcore</span>
+  </a>
   <script type="importmap">
   {
     "imports": {
