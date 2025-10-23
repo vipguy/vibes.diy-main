@@ -297,7 +297,12 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
   // Use the same HTML generation as download for consistency
+  console.log('[Puter Export] Code length:', reactCode.length);
+  console.log('[Puter Export] Code preview:', reactCode.substring(0, 200));
+  
   const html = generateStandaloneHtml({ code: reactCode });
+  
+  console.log('[Puter Export] Generated HTML length:', html.length);
   
   return [
     {

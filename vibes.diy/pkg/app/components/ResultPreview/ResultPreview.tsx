@@ -65,6 +65,9 @@ function ResultPreview({
   // Function to download HTML file
   const handleDownloadHtml = useCallback(async () => {
     try {
+      console.log('[Download HTML] Code length:', code.length);
+      console.log('[Download HTML] Code preview:', code.substring(0, 200));
+      
       const html = generateStandaloneHtml({ code });
       const name = currentTitle !== "Untitled App" ? currentTitle : "app";
       downloadTextFile(`${name}.html`, html);
