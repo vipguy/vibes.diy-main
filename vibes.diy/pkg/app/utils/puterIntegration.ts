@@ -7,6 +7,7 @@ import {
   normalizeComponentExports,
   transformImports,
 } from '@vibes.diy/prompts';
+import { generateStandaloneHtml } from './exportHtml.js';
 
 declare global {
   interface Window {
@@ -295,8 +296,7 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
  * Uses the SAME process as HTML download for consistency
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
-  // Import and use the same HTML generation as download for consistency
-  const { generateStandaloneHtml } = require('./exportHtml.js');
+  // Use the same HTML generation as download for consistency
   const html = generateStandaloneHtml({ code: reactCode });
   
   return [
