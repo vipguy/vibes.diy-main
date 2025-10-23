@@ -46,8 +46,13 @@ export function useImmediateErrorAutoSend({
     if (!debouncedSendRef.current) {
       debouncedSendRef.current = setTimeout(() => {
         sentErrorsRef.current.add(fingerprint);
+        
+        // Create a more aggressive error recovery message
+        const errorTypes = immediateErrors.map(e => e.errorType).join(', ');
+        const errorMessages = immediateErrors.map(e => e.message).slice(0, 3).join('\n');
+        
         mergeUserMessage({
-          text: "Please help me fix the errors shown above. Simplify the code if necessary.",
+          text: `CRITICAL: Fix these ${errorTypes} errors immediately and rebuild the app:\n\n${errorMessages}\n\nIMPORTANT: Analyze the errors, fix the root cause, and provide the complete corrected code. Simplify if needed to ensure it works.`,
         });
         setDidSendErrors(true);
         debouncedSendRef.current = null;
