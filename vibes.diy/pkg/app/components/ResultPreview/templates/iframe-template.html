@@ -4,19 +4,41 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Made on Vibes DIY</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         padding: 0;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        height: 100vh;
+        overflow: auto;
       }
       #container {
         width: 100%;
-        height: 100vh;
+        min-height: 100%;
+      }
+      .error-container {
+        padding: 20px;
+        color: #dc2626;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        margin: 20px;
+        font-family: monospace;
+        white-space: pre-wrap;
       }
     </style>
   </head>
@@ -27,28 +49,30 @@
       window.CALLAI_CHAT_URL = "{{CALLAI_ENDPOINT}}";
       window.CALLAI_IMG_URL = "{{CALLAI_ENDPOINT}}";
     </script>
-    <script type="importmap">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@>=19.1.0/es2022/react.mjs",
-          "react-dom": "https://esm.sh/react-dom@>=19.1.0/es2022/react-dom.mjs",
-          "react-dom/client": "https://esm.sh/react-dom@>=19.1.0/es2022/client.mjs",
-          "use-fireproof": "https://esm.sh/use-fireproof@0.23.11?external=react,react-dom",
-          "call-ai": "https://esm.sh/call-ai",
-          "use-vibes": "https://esm.sh/use-vibes",
-          "three": "https://esm.sh/three"
-        }
-      }
-    </script>
-    <script type="text/babel" data-type="module">
-      import ReactDOMClient from "react-dom/client";
+    <script type="text/babel">
+      const { useState, useEffect, useCallback, useMemo, useRef, useContext, useReducer } = React;
 
       // prettier-ignore
       {{APP_CODE}}
       // prettier-ignore-end
 
       const rootElement = document.getElementById("container");
-      ReactDOMClient.createRoot(rootElement).render(<App />);
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(<App />);
+    </script>
+    <script>
+      // Error handling
+      window.addEventListener('error', (event) => {
+        console.error('Runtime error:', event.error);
+        const root = document.getElementById('container');
+        if (root && !root.hasChildNodes()) {
+          root.innerHTML = 
+            '<div class="error-container">' +
+            '<strong>Error loading app:</strong>\n' +
+            (event.error?.message || event.message) +
+            '</div>';
+        }
+      });
     </script>
     <!--
     Agents see LLMs docs:

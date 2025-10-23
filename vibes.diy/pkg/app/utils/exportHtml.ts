@@ -5,9 +5,22 @@ import {
   transformImports,
 } from "@vibes.diy/prompts";
 
+/**
+ * Remove React imports since we're using UMD builds
+ */
+function removeReactImports(code: string): string {
+  return code
+    .replace(/import\s+React(?:\s*,\s*\{[^}]*\})?\s+from\s+['"]react['"]\s*;?\n?/g, '')
+    .replace(/import\s+\{([^}]+)\}\s+from\s+['"]react['"]\s*;?\n?/g, '')
+    .replace(/import\s+\*\s+as\s+React\s+from\s+['"]react['"]\s*;?\n?/g, '')
+    .replace(/import\s+.*from\s+['"]react-dom['"]\s*;?\n?/g, '')
+    .replace(/import\s+.*from\s+['"]react-dom\/client['"]\s*;?\n?/g, '');
+}
+
 export function generateStandaloneHtml(params: { code: string }): string {
   const normalized = normalizeComponentExports(params.code);
-  const transformed = transformImports(normalized);
+  const withoutReactImports = removeReactImports(normalized);
+  const transformed = transformImports(withoutReactImports);
 
   return iframeTemplateRaw
     .replaceAll("{{API_KEY}}", "sk-vibes-proxy-managed")

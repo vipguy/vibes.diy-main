@@ -3,6 +3,11 @@
  * Handles authentication and hosting deployment to Puter
  */
 
+import {
+  normalizeComponentExports,
+  transformImports,
+} from '@vibes.diy/prompts';
+
 declare global {
   interface Window {
     puter: any;
@@ -285,25 +290,24 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
   await window.puter.hosting.delete(subdomain);
 }
 
-import { normalizeComponentExports } from '@vibes.diy/prompts';
-
 /**
  * Generate files for deployment from React component code
- * Uses the same approach as vibesbox.dev hosting
+ * Creates a self-contained HTML file with all dependencies via import maps
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
-  // Transform the code to use ESM imports from esm.sh
-  // This is the same transformation used by the regular publish flow
-  const transformedCode = normalizeComponentExports(reactCode);
+  // First normalize the component to ensure it's named App and has proper exports
+  const normalized = normalizeComponentExports(reactCode);
+  const transformed = transformImports(normalized);
   
-  // Create a standalone HTML file similar to vibesbox.dev
+  // Create a self-contained HTML file with import maps and Babel
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibes DIY App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     * {
       margin: 0;
@@ -311,6 +315,8 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
       box-sizing: border-box;
     }
     body {
+      margin: 0;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
@@ -318,18 +324,64 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
       -moz-osx-font-smoothing: grayscale;
       width: 100%;
       height: 100vh;
-      overflow: hidden;
+      overflow: auto;
     }
     #root {
       width: 100%;
-      height: 100%;
+      min-height: 100%;
+    }
+    .error-container {
+      padding: 20px;
+      color: #dc2626;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      margin: 20px;
+      font-family: monospace;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="module">
-    ${transformedCode}
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@19.2.0",
+      "react-dom": "https://esm.sh/react-dom@19.2.0",
+      "react-dom/client": "https://esm.sh/react-dom@19.2.0/client",
+      "use-fireproof": "https://esm.sh/use-fireproof@0.23.11?external=react,react-dom",
+      "call-ai": "https://esm.sh/call-ai",
+      "use-vibes": "https://esm.sh/use-vibes",
+      "three": "https://esm.sh/three"
+    }
+  }
+  </script>
+  <script type="text/babel" data-type="module">
+    import ReactDOMClient from 'react-dom/client';
+
+    // prettier-ignore
+    ${transformed}
+    // prettier-ignore-end
+
+    // Render the app
+    const rootElement = document.getElementById('root');
+    const root = ReactDOMClient.createRoot(rootElement);
+    root.render(<App />);
+  </script>
+  <script>
+    // Error handling
+    window.addEventListener('error', (event) => {
+      console.error('Runtime error:', event.error);
+      const root = document.getElementById('root');
+      if (root && !root.hasChildNodes()) {
+        root.innerHTML = 
+          '<div class="error-container">' +
+          '<strong>Error loading app:</strong>\\n' +
+          (event.error?.message || event.message) +
+          '</div>';
+      }
+    });
   </script>
 </body>
 </html>`;
