@@ -292,15 +292,24 @@ export async function deletePuterSite(subdomain: string): Promise<void> {
 
 /**
  * Generate files for deployment from React component code
- * Creates a self-contained HTML file with all dependencies via import maps
+ * Uses the SAME process as HTML download for consistency
  */
 export function generateDeploymentFiles(reactCode: string): { path: string; content: string }[] {
-  // First normalize the component to ensure it's named App and has proper exports
-  const normalized = normalizeComponentExports(reactCode);
-  const transformed = transformImports(normalized);
+  // Import and use the same HTML generation as download for consistency
+  const { generateStandaloneHtml } = require('./exportHtml.js');
+  const html = generateStandaloneHtml({ code: reactCode });
   
-  // Create a self-contained HTML file with import maps and Babel
-  const html = `<!DOCTYPE html>
+  return [
+    {
+      path: 'index.html',
+      content: html,
+    },
+  ];
+}
+
+// OLD INLINE TEMPLATE REMOVED - NOW USING SHARED generateStandaloneHtml
+/*
+  const oldHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -440,11 +449,4 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
   </script>
 </body>
 </html>`;
-
-  return [
-    {
-      path: 'index.html',
-      content: html,
-    },
-  ];
-}
+*/
