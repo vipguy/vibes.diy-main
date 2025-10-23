@@ -124,8 +124,10 @@ export async function publishApp({
     // First, normalize the code to handle different line endings and whitespace
     const normalizedCode = code.replace(/\r\n/g, "\n").trim();
 
-    // Transform imports to use esm.sh
-    const transformedCode = normalizeComponentExports(normalizedCode);
+    // Transform imports to use esm.sh - import both functions
+    const { normalizeComponentExports: normalize, transformImports } = await import("@vibes.diy/prompts");
+    const normalized = normalize(normalizedCode);
+    const transformedCode = transformImports(normalized);
 
     // Prepare headers with optional Authorization
     const headers: Record<string, string> = {
