@@ -4,10 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Made on Vibes DIY</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       * {
         margin: 0;
@@ -104,15 +102,28 @@
       window.CALLAI_CHAT_URL = "{{CALLAI_ENDPOINT}}";
       window.CALLAI_IMG_URL = "{{CALLAI_ENDPOINT}}";
     </script>
-    <script type="text/babel">
-      const { useState, useEffect, useCallback, useMemo, useRef, useContext, useReducer } = React;
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.2.0",
+        "react-dom": "https://esm.sh/react-dom@19.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@19.2.0/client",
+        "use-fireproof": "https://esm.sh/use-fireproof@0.23.11?external=react,react-dom",
+        "call-ai": "https://esm.sh/call-ai",
+        "use-vibes": "https://esm.sh/use-vibes",
+        "three": "https://esm.sh/three"
+      }
+    }
+    </script>
+    <script type="text/babel" data-type="module">
+      import ReactDOMClient from 'react-dom/client';
 
       // prettier-ignore
       {{APP_CODE}}
       // prettier-ignore-end
 
       const rootElement = document.getElementById("container");
-      const root = ReactDOM.createRoot(rootElement);
+      const root = ReactDOMClient.createRoot(rootElement);
       root.render(<App />);
     </script>
     <script>
@@ -130,9 +141,8 @@
       });
     </script>
     <!--
-    NOTE: This standalone HTML uses UMD React builds and Babel for JSX compilation.
-    External libraries (use-fireproof, call-ai, use-vibes, three) are NOT included.
-    For full functionality with all libraries, use Puter export or deploy to Vibes DIY hosting.
+    This standalone HTML includes all dependencies via import maps and Babel.
+    Libraries included: React, use-fireproof, call-ai, use-vibes, three.js
     
     Agents see LLMs docs:
       Database: https://use-fireproof.com/llms-full.txt 

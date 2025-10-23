@@ -5,33 +5,14 @@ import {
   transformImports,
 } from "@vibes.diy/prompts";
 
-/**
- * Remove ALL imports and exports since we're using UMD builds and Babel
- * UMD builds provide globals, and Babel doesn't support ES module imports/exports
- */
-function removeImportsAndExports(code: string): string {
-  let cleaned = code;
-  
-  // Remove all import statements
-  cleaned = cleaned.replace(/import\s+(?:(?:\{[^}]*\}|\*\s+as\s+\w+|\w+)(?:\s*,\s*\{[^}]*\})?\s+from\s+)?['"][^'"]+['"]\s*;?\n?/g, '');
-  
-  // Remove export default statements but keep the code
-  cleaned = cleaned.replace(/export\s+default\s+/g, '');
-  
-  // Remove export keyword from declarations
-  cleaned = cleaned.replace(/export\s+/g, '');
-  
-  return cleaned;
-}
-
 export function generateStandaloneHtml(params: { code: string }): string {
   const normalized = normalizeComponentExports(params.code);
-  const withoutImportsExports = removeImportsAndExports(normalized);
+  const transformed = transformImports(normalized);
 
   return iframeTemplateRaw
     .replaceAll("{{API_KEY}}", "sk-vibes-proxy-managed")
     .replaceAll("{{CALLAI_ENDPOINT}}", VibesDiyEnv.CALLAI_ENDPOINT())
-    .replace("{{APP_CODE}}", withoutImportsExports);
+    .replace("{{APP_CODE}}", transformed);
 }
 
 export function downloadTextFile(
