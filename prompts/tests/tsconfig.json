@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "types": ["@vitest/browser/providers/playwright"]
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"]
+}

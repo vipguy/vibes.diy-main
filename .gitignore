@@ -1,0 +1,20 @@
+node_modules
+**/__screenshots__/
+**/build/
+**/dist/
+.claude/
+
+.env*
+.netlify/
+.react-router/
+.wrangler/
+
+# Ignore editor backup files
+**~
+
+## Debug and test files
+claude-browse-vibes/*.png
+test-results/
+playwright-report/
+playwright/.cache/
+

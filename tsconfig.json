@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
+
+    "paths": {
+      "~/vibes.diy/*": ["./vibes.diy/pkg/*"]
+    },
+
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "types": ["node", "deno"]
+  },
+  "include": [
+    "call-ai/**/*",
+    "use-vibes/**/*",
+    "vibes.diy/**/*",
+    "prompts/**/*",
+    "utils/**/*",
+    "hosting/**/*"
+  ],
+  "exclude": [
+    "vibes.diy/**/root.*",
+    "vibes.diy/**/root.test.*",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/examples/**",
+    "**/.react-router/**",
+    "**/.netlify/**",
+    "**/tests-new/**",
+    "hosting/tests/unit/**"
+  ]
+}

@@ -1,0 +1,37 @@
+name: "setup-runtime"
+description: "setup  runtime"
+# inputs:
+# your inputs here
+runs:
+  using: composite
+  steps:
+    - uses: ./actions/runtime
+
+    - name: install
+      shell: bash
+      run: |
+        pnpm remove -r playwright-chromium
+        pnpm install
+
+    - name: format-check
+      shell: bash
+      run: pnpm run format --check
+
+    - name: lint
+      shell: bash
+      run: |
+        pnpm run lint
+
+    - name: build
+      shell: bash
+      run: pnpm run build
+
+    - name: test
+      shell: bash
+      run: |
+        PLAYWRIGHT_VERSION=$(pnpm why playwright --json | jq -r '.[0].devDependencies.playwright.version // empty')
+        docker run --rm \
+          -v $(pwd):/work \
+          -w /work \
+          mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble \
+          bash -c "npm run test"

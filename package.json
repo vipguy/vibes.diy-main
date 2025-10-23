@@ -1,0 +1,72 @@
+{
+  "name": "vibes.diy-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "it contains all elements of vibes.diy web page",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VibesDIY/vibes.diy.git"
+  },
+  "homepage": "https://vibes.diy",
+  "bugs": {
+    "url": "https://github.com/VibesDIY/vibes.diy/issues"
+  },
+  "scripts": {
+    "xbuild:base": "pnpm --filter use-vibes-base build",
+    "build": "core-cli tsc",
+    "lint": "eslint . && cd hosting/pkg && pnpm lint && cd ../../vibesbox/pkg && pnpm lint && cd ../tests/unit && pnpm lint",
+    "test": "cross-env DISABLE_REACT_ROUTER=true vitest --run",
+    "test:coverage": "cross-env DISABLE_REACT_ROUTER=true vitest run --coverage --watch",
+    "test:all": "cd vibes.diy/tests/app && pnpm run test && cd ../simple-chat && pnpm run test && cd ../../../prompts/tests && pnpm run test && cd ../../use-vibes/tests && pnpm run test && cd ../../call-ai/tests && pnpm run test",
+    "playwright:claude": "playwright test -c claude-browse-vibes/playwright.config.js",
+    "test:screenshot:local": "node claude-browse-vibes/test-screenshot-api.js",
+    "format": "prettier --write  --log-level silent .",
+    "hosting:check": "echo '🔍 Running hosting CI checks...' && pnpm --filter @vibes.diy/hosting-base build && echo '✅ Hosting base built' && cd hosting/pkg && pnpm check && echo '✅ Hosting format and lint passed' && cd ../.. && pnpm --filter @vibes.diy/hosting-tests test && echo '🎉 All hosting CI checks passed!'",
+    "vibesbox:check": "echo '🔍 Running vibesbox CI checks...' && cd vibesbox/pkg && pnpm check && echo '✅ Vibesbox format and lint passed' && cd .. && pnpm --filter @vibes.diy/vibesbox-tests test && echo '🎉 All vibesbox CI checks passed!'",
+    "dev": "cd vibes.diy/pkg && pnpm run dev",
+    "dev:router": "cd vibes.diy/pkg && pnpm run dev:router",
+    "pack": "echo skip pack",
+    "publish": "echo skip publish",
+    "check": "pnpm format && pnpm build && pnpm lint && pnpm test",
+    "storybook": "cd vibes.diy/pkg && cross-env DISABLE_REACT_ROUTER=true pnpm run storybook",
+    "storybook:use-vibes": "cd use-vibes/base && pnpm run storybook"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "api",
+    "call",
+    "openai",
+    "streaming",
+    "openrouter"
+  ],
+  "contributors": [
+    "J Chris Anderson",
+    "Selem Delul",
+    "Meno Abels"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "@fireproof/core-cli": "^0.23.15",
+    "@playwright/test": "^1.56.0",
+    "@types/deno": "^2.5.0",
+    "@types/node": "^24.7.2",
+    "@typescript/native-preview": "7.0.0-dev.20251013.1",
+    "@vitest/coverage-v8": "3.2.4",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-import": "^2.32.0",
+    "playwright": "^1.56.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "puppeteer": "^24.25.0",
+    "typescript-eslint": "^8.46.1",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.42.2"
+  }
+}

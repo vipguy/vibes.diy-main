@@ -1,0 +1,30 @@
+{
+  "name": "@vibes.diy/use-vibes-types",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Core components and utilities for use-vibes (internal workspace package)",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "scripts": {
+    "build": "core-cli tsc",
+    "pack": "core-cli build -x '^' --doPack",
+    "publish": "core-cli build -x '^'"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "call-ai": "workspace:*",
+    "use-fireproof": "^0.23.15"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@fireproof/core-cli": "^0.23.14",
+    "@types/react": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}

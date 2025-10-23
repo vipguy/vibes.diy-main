@@ -1,0 +1,15 @@
+name: "common ci run"
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+jobs:
+  compile_test:
+    runs-on: ubuntu-latest
+
+    if: ${{ !contains(github.event.pull_request.title, '[skip ci]') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./actions/base

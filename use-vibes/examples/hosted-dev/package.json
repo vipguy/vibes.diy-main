@@ -1,0 +1,35 @@
+{
+  "name": "@vibes.diy/hosted-dev",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src/ --config ../../../eslint.config.mjs",
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format && pnpm typecheck && pnpm lint && pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "serve": "serve -s dist"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "use-vibes": "workspace:*",
+    "call-ai": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "prettier": "^3.6.2",
+    "serve": "^14.2.5",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.9",
+    "vitest": "^3.2.4"
+  }
+}

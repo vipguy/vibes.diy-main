@@ -1,0 +1,40 @@
+{
+  "name": "@vibes.diy/prompts",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "",
+  "scripts": {
+    "build": "core-cli tsc",
+    "test": "vitest run",
+    "pack": "core-cli build -x '^' --doPack",
+    "publish": "core-cli build -x '^'"
+  },
+  "keywords": [
+    "ai",
+    "dom",
+    "micro-app",
+    "generator",
+    "web",
+    "esm",
+    "typescript"
+  ],
+  "contributors": [
+    "J Chris Anderson",
+    "Meno Abels"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@adviser/cement": "^0.4.43",
+    "@fireproof/core-types-base": "^0.23.14",
+    "@vibes.diy/use-vibes-types": "workspace:*",
+    "call-ai": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@fireproof/core-cli": "^0.23.14",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.1"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "call-ai-tests-unit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lightweight library for making AI API calls with streaming support",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VibesDIY/vibes.diy.git"
+  },
+  "homepage": "https://github.com/VibesDIY/vibes.diy",
+  "bugs": {
+    "url": "https://github.com/VibesDIY/vibes.diy/issues"
+  },
+  "scripts": {
+    "build": "core-cli tsc",
+    "test": "vitest --run",
+    "test:integration": "vitest simple.integration",
+    "test:all": "pnpm test && pnpm test:integration",
+    "pack": "echo skip pack",
+    "publish": "echo skip publish"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "api",
+    "call",
+    "openai",
+    "streaming",
+    "openrouter"
+  ],
+  "contributors": [
+    "J Chris Anderson",
+    "Meno Abels"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.7.2",
+    "jest": "^30.0.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "zx": "^8.8.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@adviser/cement": "^0.4.43",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/user-event": "^14.6.1",
+    "call-ai": "workspace:0.0.0",
+    "jest-fetch-mock": "^3.0.3",
+    "ts-jest": "^29.4.5",
+    "vite": "^7.1.9"
+  }
+}
