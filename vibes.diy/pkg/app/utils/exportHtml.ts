@@ -6,26 +6,22 @@ import {
 } from "@vibes.diy/prompts";
 
 /**
- * Remove React imports since we're using UMD builds
+ * Remove ALL imports since we're using UMD builds and Babel
+ * UMD builds provide globals, and Babel doesn't support ES module imports
  */
-function removeReactImports(code: string): string {
-  return code
-    .replace(/import\s+React(?:\s*,\s*\{[^}]*\})?\s+from\s+['"]react['"]\s*;?\n?/g, '')
-    .replace(/import\s+\{([^}]+)\}\s+from\s+['"]react['"]\s*;?\n?/g, '')
-    .replace(/import\s+\*\s+as\s+React\s+from\s+['"]react['"]\s*;?\n?/g, '')
-    .replace(/import\s+.*from\s+['"]react-dom['"]\s*;?\n?/g, '')
-    .replace(/import\s+.*from\s+['"]react-dom\/client['"]\s*;?\n?/g, '');
+function removeAllImports(code: string): string {
+  // Remove all import statements
+  return code.replace(/import\s+(?:(?:\{[^}]*\}|\*\s+as\s+\w+|\w+)(?:\s*,\s*\{[^}]*\})?\s+from\s+)?['"][^'"]+['"]\s*;?\n?/g, '');
 }
 
 export function generateStandaloneHtml(params: { code: string }): string {
   const normalized = normalizeComponentExports(params.code);
-  const withoutReactImports = removeReactImports(normalized);
-  const transformed = transformImports(withoutReactImports);
+  const withoutImports = removeAllImports(normalized);
 
   return iframeTemplateRaw
     .replaceAll("{{API_KEY}}", "sk-vibes-proxy-managed")
     .replaceAll("{{CALLAI_ENDPOINT}}", VibesDiyEnv.CALLAI_ENDPOINT())
-    .replace("{{APP_CODE}}", transformed);
+    .replace("{{APP_CODE}}", withoutImports);
 }
 
 export function downloadTextFile(
