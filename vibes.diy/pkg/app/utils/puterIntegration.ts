@@ -354,10 +354,12 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
       display: flex;
       align-items: center;
       gap: 6px;
-      z-index: 9999;
+      z-index: 999999;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transition: all 0.2s ease;
       text-decoration: none;
+      pointer-events: auto;
+      cursor: pointer;
     }
     .primalcore-badge:hover {
       background: rgba(0, 0, 0, 0.9);
@@ -367,6 +369,7 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
     .primalcore-badge svg {
       width: 16px;
       height: 16px;
+      flex-shrink: 0;
     }
     @media (max-width: 640px) {
       .primalcore-badge {
@@ -375,12 +378,16 @@ export function generateDeploymentFiles(reactCode: string): { path: string; cont
         padding: 6px 12px;
         font-size: 11px;
       }
+      .primalcore-badge svg {
+        width: 14px;
+        height: 14px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="root"></div>
-  <a href="https://primalcore.com" target="_blank" rel="noopener noreferrer" class="primalcore-badge">
+  <a href="https://github.com/vipguy/vibes.diy-main" target="_blank" rel="noopener noreferrer" class="primalcore-badge">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
       <path d="M2 17l10 5 10-5"></path>
