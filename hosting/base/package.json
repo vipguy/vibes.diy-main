@@ -30,7 +30,7 @@
     "unique-names-generator": "^4.7.1"
   },
   "devDependencies": {
-    "@fireproof/core-cli": "^0.23.14",
+    "@fireproof/core-cli": "^0.23.15",
     "typescript": "^5.9.3"
   }
 }
