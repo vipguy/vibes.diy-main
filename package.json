@@ -68,7 +68,7 @@
     "@typescript/native-preview": "7.0.0-dev.20251023.1",
     "@vitest/coverage-v8": "4.0.2",
     "cross-env": "^10.1.0",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.0",
     "eslint-plugin-import": "^2.32.0",
     "playwright": "^1.56.1",
     "prettier": "^3.6.2",
